@@ -3,7 +3,7 @@ import UserData from './UserData';
 
 export default class UserList extends Component {
     
-    handleClick(id) {
+    clickFunc(id) {
         this.props.callback(id);
     }
 
@@ -21,10 +21,9 @@ export default class UserList extends Component {
                     </thead>
                     <tbody>
                         { this.props.users.map((user) => {
-                            return <UserData id={user.id} name={user.name} age={user.age} phone={user.phone} image={user.image} key={user.id}  callback={this.handleClick.bind(this)} />
+                            return <UserData id={user.id} key={user.id} name={user.name} age={user.age} phone={user.phone} image={user.image} callback={this.clickFunc.bind(this)} />
                             })
                         }
-                        
                     </tbody>
                 </table>
             </div>

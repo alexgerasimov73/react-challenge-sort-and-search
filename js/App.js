@@ -4,19 +4,6 @@ import ToolBar from './components/ToolBar';
 import UserList from './components/UserList';
 import ActiveUser from './components/ActiveUser';
 
-// const request = new XMLHttpRequest();
-// const url = "data.json";
-// request.open("GET", url, true);
-
-// request.addEventListener("load", () => {
-//     if (request.status >= 200 && request.status < 400) {
-//         const response = JSON.parse(request.responseText);
-//         console.log(response);
-//     }
-// });
-
-// request.send();
-
 export default class App extends Component {
     constructor(props) {
         super(props);
@@ -35,12 +22,12 @@ export default class App extends Component {
 
         request.addEventListener("load", () => {
             if (request.status >= 200 && request.status < 400) {
-                const response = JSON.parse(request.responseText);
+                this.startingData = JSON.parse(request.responseText);
                 this.setState({
-					usersData: response,
-					active: response[0]
+					usersData: this.startingData,
+					active: this.startingData[0]
                 });
-                console.log(this.usersData);
+                console.log(this.state.usersData);
             } else console.log("Houston, we have problems!");
         });
 
@@ -49,66 +36,91 @@ export default class App extends Component {
         request.send();
     }
 
+    changeState(config) {
+        this.setState(config)
+    }
+
+    sorting(value, direction) {
+        let users = this.state.usersData;
+
+        if (value === "age") {
+            if (direction === "forth") users = users.sort((a, b) => a.age - b.age);
+            else if (direction === "back") users = users.sort((a, b) => b.age - a.age);
+        } else if (value === "name") {
+            if (direction === "forth") {
+                users = users.sort((a, b) => {
+                    if (a.name > b.name) {
+                        return 1;
+                    } else if (a.name < b.name) {
+                        return -1;
+                    }
+                return 0;
+                });
+            } else if (direction === "back") {
+                users = users.sort((a, b) => {
+                    if (a.name > b.name) {
+                        return -1;
+                    } else if (a.name < b.name) {
+                        return 1;
+                    }
+                    return 0;
+                });
+            }
+            // switch(direction) {
+            //     case "forth" :
+            //         users = users.sort((a, b) => {
+            //             if (a.name > b.name) {
+            //                 return 1;
+            //             } else if (a.name < b.name) {
+            //                 return -1;
+            //             }
+            //             return 0;
+            //         });
+            //         break;
+            //     case "back" :
+            //     users = users.sort((a, b) => {
+            //         if (a.name > b.name) {
+            //             return -1;
+            //         } else if (a.name < b.name) {
+            //             return 1;
+            //         }
+            //         return 0;
+            //     });
+            //     break;
+            // }
+        }
+        this.setState({
+            usersData: users
+        })
+
+        this.updateActiveUser(this.state.usersData[0]);
+    }
+
+    clickFunc(id) {
+        this.updateActiveUser(this.getUser(id));
+    }
+
+    updateActiveUser(user) {
+        this.setState({
+            active: user
+        })
+    }
+
+    getUser(id) {
+        const user = this.state.usersData.filter((user) => user.id === id);
+        return user[0];
+    }
+
     render() {
         return ( 
 			<div className="app container-fluid"> 
-				<SearchBar />
-				<ToolBar />
+				<SearchBar data={this.startingData} callback={this.changeState.bind(this)} />
+				<ToolBar callback={this.sorting.bind(this)} />
 				<div className="row">
-					<UserList users={this.state.usersData} />
-					<ActiveUser user={this.state.active} />
+					<UserList users={this.state.usersData} callback={this.clickFunc.bind(this)} />
+					<ActiveUser user={this.state.active}  />
 				</div>
             </div>
         )
     }
 }
-
-
-// export default class App extends Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       phrase: 'Нажми на кнопку!',
-//       count: 0
-//     };
-//   }
-
-//   updateBtn() {
-//     const phrases = [
-//       'ЖМИ!', 'Не останавливайся!',
-//       'У тебя хорошо получается!', 'Красавчик!',
-//       'Вот это и есть React!', 'Продолжай!',
-//       'Пока ты тут нажимаешь кнопку другие работают!',
-//       'Всё хватит!', 'Ну и зачем ты нажал?',
-//       'В следующий раз тут будет полезный совет',
-//       'Чего ты ждешь от этой кнопки?',
-//       'Если дойдёшь до тысячи, то сразу научищься реакту',
-//       'ой, всё!', 'Ты нажал кнопку столько раз, что обязан на ней жениться',
-//       'У нас было 2 npm-пакета с реактом, 75 зависимостей от сторонних библиотек, '
-//       + '5 npm-скриптов и целое множество плагинов галпа всех сортов и расцветок, '
-//       + 'а также redux, jquery, mocha, пачка плагинов для eslint и ингерация с firebase. '
-//       + 'Не то что бы это был необходимый набор для фронтенда. Но если начал собирать '
-//       + 'вебпаком, становится трудно остановиться. Единственное, что вызывало у меня '
-//       + 'опасения - это jquery. Нет ничего более беспомощного, безответственного и испорченного, '
-//       + 'чем рядовой верстальщик без jquery. Я знал, что рано или поздно мы перейдем и на эту дрянь.',
-//       'coub про кота-джедая: http://coub.com/view/spxn',
-//       'Дальнобойщики на дороге ярости: http://coub.com/view/6h0dy',
-//       'Реакция коллег на ваш код: http://coub.com/view/5rjjw',
-//       'Енот ворует еду: http://coub.com/view/xi3cio',
-//       'Российский дизайн: http://coub.com/view/16adw5i0'
-//     ];
-//     this.setState({
-//       count: this.state.count + 1,
-//       phrase: phrases[parseInt(Math.random() * phrases.length)]
-//     });
-//   }
-
-//   render() {
-//     return (
-//       <div className="container app">
-//         <Button count={this.state.count} update={this.updateBtn.bind(this)} />
-//         <p style={{marginTop: 2 + 'rem'}}>{this.state.phrase}</p>
-//       </div>
-//     );
-//   }
-// }
