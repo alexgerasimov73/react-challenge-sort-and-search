@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 export default class ActiveUser extends Component {
     
     render() {
-        if (typeof this.props.user === undefined || this.props.user === null) {
+        if (typeof this.props.user === "undefined" || this.props.user === null) {
             return (
-                <h3>Nothing...</h3>
+                <h3>Empty...</h3>
             );
         } 
         return (

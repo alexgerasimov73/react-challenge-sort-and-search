@@ -5,7 +5,7 @@ export default class SearchBar extends Component {
     searchFunc(event) {
         const value = event.target.value;
         const filterData = this.props.data.filter(user => {
-            return user.name.toLowerCase().includes(value);
+            return user.name.toLowerCase().includes(value.toLowerCase());
         });
 
         this.props.callback({
